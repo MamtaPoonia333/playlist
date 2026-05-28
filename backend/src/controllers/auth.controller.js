@@ -3,7 +3,6 @@ const userModel = require('../model/user.model');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const { redisClient } = require('../config/redis');
 
 const cookieOptions = {
 	httpOnly: true,
@@ -16,22 +15,6 @@ function signAuthToken(user) {
         process.env.JWT_SECRET,
         { expiresIn: '1d', jwtid: crypto.randomUUID() }
     );
-}
-
-async function revokeToken(token) {
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        if (!decoded?.jti || !decoded?.exp) {
-            return;
-        }
-
-        const ttl = decoded.exp - Math.floor(Date.now() / 1000);
-        if (ttl > 0) {
-            await redisClient.set(`blacklist:${decoded.jti}`, '1', { EX: ttl });
-        }
-    } catch (error) {
-        return;
-    }
 }
 
 async function registerController(req, res) {
@@ -124,11 +107,6 @@ async function deleteAccountController(req, res) {
 
         await userModel.findByIdAndDelete(userId);
 
-        const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];
-        if (token) {
-            await revokeToken(token);
-        }
-
         res.clearCookie('token', cookieOptions);
 
         return res.status(200).json({
@@ -180,10 +158,6 @@ async function loginController(req, res) {
 }
 async function logoutController(req, res) {
     try {
-        const token = (req.cookies && req.cookies.token) || (req.headers.authorization && req.headers.authorization.split(' ')[1]);
-        if (token) {
-            await revokeToken(token);
-        }
         res.clearCookie('token', cookieOptions);
         return res.status(200).json({
             message: 'Logout successful'

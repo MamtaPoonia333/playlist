@@ -1,5 +1,6 @@
+const path = require('path');
 const mongoose = require('mongoose');
-require('dotenv').config();
+require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
 async function connectDB() {
     const MONGO_URL = process.env.MONGO_URI?.trim().replace(/;$/, '');
 
