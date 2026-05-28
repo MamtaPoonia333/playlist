@@ -2,11 +2,16 @@ const songModel = require("../model/song.model");
 const ImageKit = require("imagekit");
 
 const mongoose = require('mongoose');
-const imagekit = new ImageKit({
-    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-    privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
-    urlEndpoint: "https://ik.imagekit.io/mamta03"
-});
+let imagekit = null;
+function getImageKit() {
+    if (imagekit) return imagekit;
+    const publicKey = process.env.IMAGEKIT_PUBLIC_KEY;
+    const privateKey = process.env.IMAGEKIT_PRIVATE_KEY;
+    const urlEndpoint = process.env.IMAGEKIT_URL_ENDPOINT || "https://ik.imagekit.io/mamta03";
+    if (!publicKey || !privateKey) return null;
+    imagekit = new ImageKit({ publicKey, privateKey, urlEndpoint });
+    return imagekit;
+}
 function santiseFileName(filename){
     return filename.replace(/\s/g, "_");
 }
@@ -24,10 +29,12 @@ async function createSong(req ,res){
         if(!req.body.title || !req.body.artist){
             return res.status(400).json({message: "Title and artist are required"});
         }
-        if(!imagekit){
-            return res.status(500).json({message: "ImageKit not configured"});
+        const ik = getImageKit();
+        if (!ik) {
+            console.error('ImageKit credentials missing');
+            return res.status(500).json({ message: "ImageKit not configured" });
         }
-        const file = await imagekit.upload({
+        const file = await ik.upload({
             file: req.file.buffer,
             fileName :  'song_' + Date.now() + "_" + santiseFileName(req.file.originalname),
         });
