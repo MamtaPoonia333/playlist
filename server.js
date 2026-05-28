@@ -13,6 +13,7 @@ async function startServer() {
     });
   } catch (error) {
     console.error('Server startup aborted because a required service is unavailable.');
+    console.error('Error:', error && (error.stack || error.message || error));
     process.exit(1);
   }
 }
