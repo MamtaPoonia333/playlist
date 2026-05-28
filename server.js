@@ -7,8 +7,9 @@ async function startServer() {
   try {
     await connectDB();
     await connectRedis();
-    app.listen(3000, () => {
-      console.log('Server is running on port 3000');
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
     });
   } catch (error) {
     console.error('Server startup aborted because a required service is unavailable.');
