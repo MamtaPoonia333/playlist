@@ -1,7 +1,7 @@
 const cookieOptions = {
 	httpOnly: true,
-	sameSite: 'lax',
-	secure: process.env.NODE_ENV === 'production'
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: process.env.NODE_ENV === 'production'
 };
 
 function getSpotifyConfig() {
@@ -9,7 +9,7 @@ function getSpotifyConfig() {
         clientId: process.env.SPOTIFY_CLIENT_ID || process.env.SpotifyClient_ID || '',
         clientSecret: process.env.SPOTIFY_CLIENT_SECRET || process.env.SpotifyClient_Secret || '',
         redirectUri: process.env.SPOTIFY_REDIRECT_URI || process.env.SpotifyRedirect_URL || '',
-        successRedirect: process.env.SPOTIFY_SUCCESS_REDIRECT || 'http://localhost:5173'
+        successRedirect: process.env.SPOTIFY_SUCCESS_REDIRECT || process.env.FRONTEND_URL || 'http://localhost:5173'
     };
 }
 
