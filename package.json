@@ -1,25 +1,10 @@
 {
-  "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "cookie-parser": "^1.4.7",
-    "cookieparser": "^0.1.0",
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "imagekit": "^6.0.0",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.6.2",
-    "multer": "^2.1.1",
-    "redis": "^5.12.1"
-  },
-  "devDependencies": {
-    "jest": "^29.6.1",
-    "mongodb-memory-server": "^8.12.2",
-    "supertest": "^6.3.3"
-  },
+  "name": "playlist-monorepo",
+  "private": true,
   "scripts": {
-    "start": "node server.js",
-    "test": "jest --runInBand",
-    "test-mongo": "node src/utils/test-mongo.js"
+    "start": "node backend/server.js",
+    "start:backend": "cd backend && npm install && npm start",
+    "start:frontend": "cd mood && npm install && npm run dev",
+    "build:frontend": "cd mood && npm install && npm run build"
   }
 }
